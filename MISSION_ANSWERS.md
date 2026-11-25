@@ -95,7 +95,9 @@ Chỉ `nginx` mở port ra ngoài host (`80`, `443`); `agent`, `redis`, `qdrant`
 
 ### Exercise 3.1 / 3.2: Deploy agent Part 6 (`06-lab-complete/`)
 
-- **Platform chính:** Railway (hoặc Render) — chi tiết URL, biến môi trường và kết quả kiểm thử 4 lệnh CP6 được ghi trong [DEPLOYMENT.md](DEPLOYMENT.md).
+- **Platform chính:** Railway (`day14-ai-agent` gồm service `ai-agent` build từ `06-lab-complete/Dockerfile` + service `Redis`)
+- **Public URL:** https://ai-agent-production-8017c0c1.up.railway.app
+- **Kết quả kiểm thử 4 lệnh CP6:** `/health` → `200`, `/ready` → `200` (`redis: ok`), `POST /ask` không có key → `401`, `POST /ask` có `X-API-Key` → `200` (chi tiết trong [DEPLOYMENT.md](DEPLOYMENT.md)).
 - **So sánh `railway.toml` và `render.yaml`:**
 
 | Tiêu chí | `railway.toml` (Railway) | `render.yaml` (Render Blueprint) |

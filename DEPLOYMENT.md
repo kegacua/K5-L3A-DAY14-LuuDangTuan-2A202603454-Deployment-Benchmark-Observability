@@ -1,17 +1,15 @@
 # Deployment Information
 
-> **Lưu ý:** Điền URL public thật sau khi chạy `railway up` (hoặc deploy Render) cho thư mục `06-lab-complete/` và cập nhật 3 ảnh `screenshots/dashboard.png`, `screenshots/running.png`, `screenshots/test.png`.
-
 ## Public URL
-`https://<your-agent-service>.up.railway.app`
+https://ai-agent-production-8017c0c1.up.railway.app
 
 ## Platform
-Railway (Docker deploy từ `06-lab-complete/Dockerfile` + `06-lab-complete/railway.toml` + Redis service)
+Railway (Docker multi-stage từ `06-lab-complete/Dockerfile` + `06-lab-complete/railway.toml` + Railway Redis service)
 
 ## Test Commands (CP6 — 4 lệnh tự kiểm)
 
 ```bash
-export BASE="https://<your-agent-service>.up.railway.app"
+export BASE="https://ai-agent-production-8017c0c1.up.railway.app"
 export AGENT_API_KEY="<YOUR_AGENT_API_KEY>"
 
 # 1. Health check (Expected: 200)
@@ -32,11 +30,31 @@ curl -sS -o /dev/null -w '%{http_code}\n' -X POST "$BASE/ask" \
   -d '{"question":"Hello"}'
 ```
 
-## Environment Variables Set
-- `PORT` (do nền tảng tự cấp)
+### Kết quả kiểm thử thực tế trên Public URL
+
+```text
+1. GET /health
+{"status":"ok","environment":"production"}
+HTTP 200
+
+2. GET /ready
+{"status":"ready","redis":"ok"}
+HTTP 200
+
+3. POST /ask (không có X-API-Key)
+{"detail":"Invalid or missing API key"}
+HTTP 401
+
+4. POST /ask (có X-API-Key hợp lệ — đã che key)
+{"question":"Hello","answer":"Tôi là AI agent được deploy lên cloud. Câu hỏi của bạn đã được nhận.","cost_usd":1.8e-05}
+HTTP 200
+```
+
+## Environment Variables Set (trên Railway Dashboard)
+- `PORT` (Railway tự cấp)
 - `ENVIRONMENT=production`
-- `REDIS_URL` (trỏ tới Redis service trên Railway/Render)
-- `AGENT_API_KEY` (secret đặt trên dashboard nền tảng, không ghi trong code)
+- `REDIS_URL=${{Redis.REDIS_URL}}` (trỏ tới Railway Redis service)
+- `AGENT_API_KEY` *(secret đặt trực tiếp trên Railway, không lưu trong code/Git)*
 - `RATE_LIMIT_PER_MINUTE=10`
 - `DAILY_BUDGET_USD=1.0`
 - `MONTHLY_BUDGET_USD=10.0`
